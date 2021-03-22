@@ -1,6 +1,6 @@
 let request = require("request");
 let cheerio = require("cheerio");
-// const getAllMatches = requie("./allMatches");
+const getAllMatches = require("./allMatches");
 
 
 let link = "https://www.espncricinfo.com/series/ipl-2020-21-1210595";
@@ -21,7 +21,4 @@ function parseData(html){
     let completeLink = "https://www.espncricinfo.com"+link;
     console.log(completeLink);
     getAllMatches(completeLink);
-
-    
-
 }

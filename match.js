@@ -2,27 +2,35 @@ let request = require("request");
 let cheerio = require("cheerio");
 let fs = require("fs");
 
-link = "https://www.espncricinfo.com/series/ipl-2020-21-1210595/delhi-capitals-vs-mumbai-indians-final-1237181/full-scorecard";
+let link = "https://www.espncricinfo.com/series/ipl-2020-21-1210595/delhi-capitals-vs-mumbai-indians-final-1237181/full-scorecard"; 
+
 
 function getMatch(link){
     request(link , cb);
 }
 
-function cb(error  , response , html){
-    console.log("inside callback")
-    parseData(html);
+
+function cb(error   ,response ,  html){
+    
+    if(error){
+        console.log(error);
+    }else{
+        console.log("inside callback")
+        parseData(html);
+    }
+    
 }
 
 function parseData(html){
 
-    let ch = cheerio.load("html");
-    console.log(ch);
-    let bothInnings = ch('.card.content-block.match-scorecard-table').text;
+    let ch = cheerio.load(html);
+    
+    let bothInnings = ch('.card.content-block.match-scorecard-table .Collapsible');
     console.log(bothInnings.length);
     for(let i = 0 ; i < bothInnings.length ; i++){
         let teamName = ch(bothInnings[i]).find('.header-title.label').text();
         console.log(teamName);
-        teamName = teamName.split("INNINGS")[0].trim();
+       teamName = teamName.split("INNINGS")[0].trim();
         console.log(teamName);
         let allTrs = ch(bothInnings[i]).find(".table.batsman tbody tr");
         for(let j = 0 ; j < allTrs.length-1 ; j++){
@@ -34,7 +42,7 @@ function parseData(html){
                 let fours = ch(allTds[5]).text().trim();
                 let sixes = ch(allTds[6]).text().trim();
                 let strikeRate = ch(allTds[7]).text().trim();
-
+                // console.log( `Batsman = ${batsmanName} Runs = ${runs} Balls = ${balls} Fours = ${fours} Sixes = ${sixes} SR = ${strikeRate}`);
                 processDetails(teamName , batsmanName , runs , balls , fours , sixes , strikeRate);
             }
         }
@@ -52,7 +60,7 @@ function checkBatsman(teamName , batsmanName){
 }
 
 function updateBatsmanFile(teamName , batsmanName , runs , balls , fours , sixes , strikeRate){
-    let bastmanPath = teamName + "/" + batsmanName + ".json";
+    let batsmanPath = teamName + "/" + batsmanName + ".json";
     let batsmanFile = fs.readFileSync(batsmanPath);
     batsmanFile = JSON.parse(batsmanFile);
     let inning = {
@@ -68,7 +76,7 @@ function updateBatsmanFile(teamName , batsmanName , runs , balls , fours , sixes
 }
 
 function createBatsmanFile(teamName , batsmanName , runs , balls , fours , sixes , strikeRate){
-    let batsmanPath = teamName + "/" + ".json";
+    let batsmanPath = teamName + "/" + batsmanName+".json";
     let batsmanFile = [];
     let inning = {
         Runs : runs , 
@@ -104,4 +112,4 @@ function processDetails(teamName , batsmanName , runs , balls , fours , sixes , 
     }
 }
 
-module.exports = getMatch;
+module.exports = getMatch; 
