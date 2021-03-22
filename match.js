@@ -41,3 +41,48 @@ function parseData(html){
     }
     console.log("##################################################################")
 }
+
+function checkTeamFolder(teamName){
+    return fs.existsSync(teamName);
+}
+
+function checkBatsman(teamName , batsmanName){
+    let bastmanPath = teamName + "/" + batsmanName + ".json";
+    return fs.existsSync(bastmanPath);
+}
+
+function updateBatsmanFile(teamName , batsmanName , runs , balls , fours , sixes , strikeRate){
+    let bastmanPath = teamName + "/" + batsmanName + ".json";
+    let batsmanFile = fs.readFileSync(batsmanPath);
+    batsmanFile = JSON.parse(batsmanFile);
+    let inning = {
+        Runs : runs , 
+        Balls : balls , 
+        Fours : fours  ,
+        Sixes : sixes , 
+        SR : strikeRate
+    }
+    batsmanFile.push(inning);
+    batsmanFile = JSON.stringify(batsmanFile);
+    fs.writeFileSync(batsmanPath , batsmanFile);
+}
+
+
+function processDetails(teamName , batsmanName , runs , balls , fours , sixes , strikeRate){
+    let isTeam = checkTeamFolder(teamName);
+    if(isTeam){
+        let isBatsman = checkBatsman(teamName , batsmanName);
+        if(isBatsman){
+            updateBatsmanFile(teamName , batsmanName , runs , balls , fours , sixes , strikeRate);
+        }
+        else{
+            createBatsmanFile(teamName , batsmanName , runs , balls , fours , sixes , strikeRate);
+        }
+    }
+    else{
+        createTeamFolder(teamName);
+        createBatsmanFile(teamName , batsmanName , runs , balls , fours , sixes , strikeRate);
+    }
+}
+
+module.exports = getMatch;
