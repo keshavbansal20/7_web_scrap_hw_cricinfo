@@ -67,6 +67,25 @@ function updateBatsmanFile(teamName , batsmanName , runs , balls , fours , sixes
     fs.writeFileSync(batsmanPath , batsmanFile);
 }
 
+function createBatsmanFile(teamName , batsmanName , runs , balls , fours , sixes , strikeRate){
+    let batsmanPath = teamName + "/" + ".json";
+    let batsmanFile = [];
+    let inning = {
+        Runs : runs , 
+        Balls : balls ,
+        Fours : fours , 
+        Sixes : sixes , 
+        SR : strikeRate
+    }
+    batsmanFile.push(inning);
+    batsmanFile = JSON.stringify(batsmanFile);
+    fs.writeFileSync(batsmanPath , batsmanFile);
+
+}
+function createTeamFolder(teamName){
+    fs.mkdirSync(teamName);
+}
+
 
 function processDetails(teamName , batsmanName , runs , balls , fours , sixes , strikeRate){
     let isTeam = checkTeamFolder(teamName);
